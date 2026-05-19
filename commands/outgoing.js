@@ -19,7 +19,6 @@ module.exports = {
         const showDate = new Date(`${show.date}, 2026`); // get show date
 
         const attended = show.attended === 'TRUE'; // check if attended
-        console.log(show.attended);
 
         const missing = show.reviewWritten !== 'TRUE'; // check if review is missing
 

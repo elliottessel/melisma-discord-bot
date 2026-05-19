@@ -24,6 +24,7 @@ async function getShows() {
   const rows = response.data.values;
 
   return rows.map(row => ({
+    rowNumber: rows.indexOf(row) + 2,
     artist: row[0],
     reporter: row[1],
     phone: row[2],
