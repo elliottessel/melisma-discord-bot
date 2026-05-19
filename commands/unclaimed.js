@@ -11,6 +11,8 @@ const {
 
 const { updateReporter, getShows } = require('../sheets');
 
+// TODO: Update after pressed (make sure can't be overwridden) 
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('unclaimed')
