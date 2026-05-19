@@ -13,7 +13,7 @@ const { updateReporter, getShows } = require('../sheets');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('unclaimed')
-    .setDescription('Unclaimed Press'),
+    .setDescription('Shows unclaimed press opportunities'),
 
   async execute(interaction) {
     await interaction.deferReply();
@@ -50,7 +50,7 @@ module.exports = {
 
     unclaimed.forEach((show, index) => {
         description +=
-        `${index + 1}. ${show.artist}\n${show.date} @ ${show.venue}\n
+        `${index + 1}. **${show.artist}**\n${show.date} @ ${show.venue}\n
         `;
     });
 

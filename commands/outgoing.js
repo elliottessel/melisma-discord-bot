@@ -5,7 +5,7 @@ const { getShows } = require('../sheets');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('outgoing')
-    .setDescription('Shows reviews that are overdue'),
+    .setDescription('Shows reviews that have been covered and not posted'),
 
   async execute(interaction) {
     await interaction.deferReply();
@@ -13,7 +13,13 @@ module.exports = {
     const shows = await getShows();
 
     const date = new Date();
+
    
+    shows.forEach(show => {
+        if (show.artist?.toLowerCase().includes('yhwh')) {
+            console.log('YHWH show:', JSON.stringify(show));
+        }
+    });
 
     const outgoing = shows.filter(show => {
         const currentYear = new Date().getFullYear();
@@ -23,7 +29,7 @@ module.exports = {
         const attended = show.attended === 'TRUE'; // check if attended
 
         const missing = show.reviewWritten !== 'TRUE'; // check if review is missing
-
+        
         const passed = showDate < date; // check if date is passed
 
         return attended && missing && passed; // only return shows that are missing and past date
@@ -37,13 +43,13 @@ module.exports = {
 
     
 
-    const limited = outgoing.slice(0, 5);
+    const limited = outgoing.reverse().slice(0, 8);
 
     
     let description = '';
 
-    limited.forEach((show, index) => {
-        description += `• ${show.artist}\nReporter: ${show.reporter || 'Unassigned'}\nDate: ${show.date}\n\n`;
+    limited.reverse().forEach((show, index) => {
+        description += `• **${show.artist}**\nReporter: ${show.reporter || 'Unassigned'}\nDate: ${show.date}\n\n`;
     });
 
     const embed = new EmbedBuilder()
