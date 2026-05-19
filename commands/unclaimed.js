@@ -6,7 +6,7 @@ const {
   ButtonStyle,
 } = require('discord.js');
 
-const { getShows } = require('../sheets');
+const { updateReporter, getShows } = require('../sheets');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -42,27 +42,9 @@ module.exports = {
 
     const components = [];
     const buttons = [];
+    const rows = [];
 
     let description = '';
-
-    // for (const show of unclaimed) {
-    //     const embed = new EmbedBuilder()
-    //         .setTitle(show.artist)
-    //         .addFields(
-    //             { name: 'Date', value: show.date, inline: true },
-    //             { name: 'Venue', value: show.venue, inline: true },
-    //         );
-
-    //     const button = new ButtonBuilder()
-    //         .setCustomId(`claim_${show.rowNumber}`)
-    //         .setLabel('Claim')
-    //         .setStyle(ButtonStyle.Primary);
-
-    //     const row = new ActionRowBuilder().addComponents(button);
-
-    //     embeds.push(embed);
-    //     components.push(row);
-    // }
 
     unclaimed.forEach((show, index) => {
         description +=
@@ -71,7 +53,7 @@ module.exports = {
     });
 
     const embed = new EmbedBuilder()
-        .setTitle('Unclaimed Press')
+        .setTitle('Unclaimed Press (Click number to claim)')
         .setDescription(description);
 
     unclaimed.forEach((show, index) => {
@@ -81,18 +63,47 @@ module.exports = {
                 `claim_${show.rowNumber}`
             )
             .setLabel(`${index + 1}`)
-            .setStyle(ButtonStyle.Primary);
+            .setStyle(ButtonStyle.Secondary);
 
         buttons.push(button);
     });
 
-    const row = new ActionRowBuilder().addComponents(buttons);
+    for (let i = 0; i < buttons.length; i += 5) {
+
+        const row =
+            new ActionRowBuilder()
+            .addComponents(
+                buttons.slice(i, i + 5)
+            );
+
+        rows.push(row);
+    }
 
     await interaction.editReply({
         embeds : [embed],
-        components: [row],
+        components: rows,
     });
-  
+
+    const message = await interaction.fetchReply();
+
+    const collector = message.createMessageComponentCollector();
+
+    collector.on('collect', async i => {    
+        if(!i.isButton()) return;
+
+        const rowNumber = i.customId.replace('claim_', '');
+
+        // update sheets with reporter 
+
+        updateReporter(rowNumber, i.member.nickname);
+
+        await i.reply({
+            content: `${i.member.nickname} has claimed show #${rowNumber}.`,
+            ephemeral: true
+        });
+
+    });
+
   },
 
 };

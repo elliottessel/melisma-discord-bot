@@ -42,6 +42,19 @@ async function getShows() {
   }));
 }
 
+async function updateReporter(rowNumber, reporter) {
+    await sheets.spreadsheets.values.update({
+        spreadsheetId,
+        range: `Press!B${rowNumber}`,
+        requestBody: {           
+            values: [[reporter]]
+        },
+        valueInputOption: 'USER_ENTERED'
+    });
+}
+
+
 module.exports = {
   getShows,
+  updateReporter,
 };
