@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 const { getShows } = require('../sheets');
 
@@ -35,18 +35,31 @@ module.exports = {
         );
     }
 
+    
+
     const limited = outgoing.slice(0, 5);
 
-    const message = limited.map(show =>
+    
+    let description = '';
 
-        `• ${show.artist}
-        Reporter: ${show.reporter || 'Unassigned'}
-        Date: ${show.date}`
+    limited.forEach((show, index) => {
+        description += `• ${show.artist}\nReporter: ${show.reporter || 'Unassigned'}\nDate: ${show.date}\n\n`;
+    });
 
-    ).join('\n\n');
+    const embed = new EmbedBuilder()
+        .setTitle('Outgoing Reviews')
+        .setDescription(description);
+
+    // const message = limited.map(show =>
+
+    //     `• ${show.artist}
+    //     Reporter: ${show.reporter || 'Unassigned'}
+    //     Date: ${show.date}`
+
+    // ).join('\n\n');
 
     await interaction.editReply({
-        content: `Outgoing Reviews:\n\n${message}`,
+        embeds: [embed],
     });
   },
   
