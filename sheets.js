@@ -42,12 +42,12 @@ async function getShows() {
   }));
 }
 
-async function updateReporter(rowNumber, reporter) {
+async function updateReporter(rowNumber, reporter, phone) {
     await sheets.spreadsheets.values.update({
         spreadsheetId,
-        range: `Press!B${rowNumber}`,
+        range: `Press!B${rowNumber}:C${rowNumber}`, // update reporter and phone number
         requestBody: {           
-            values: [[reporter]]
+            values: [[reporter, phone]]
         },
         valueInputOption: 'USER_ENTERED'
     });

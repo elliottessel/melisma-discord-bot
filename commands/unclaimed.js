@@ -94,20 +94,35 @@ module.exports = {
     collector.on('collect', async i => {    
         if(!i.isButton()) return;
 
+        await i.deferUpdate(); 
+
         const parts = i.customId.split('_');
         const rowNumber = parts[1];
         const artist = parts.slice(2).join('_'); // handles artists with underscores in name
 
+        const prompt = await i.channel.send(`Please enter your phone number:`);
 
-
-        // update sheets with reporter 
-        updateReporter(rowNumber, i.member.nickname);
- 
-
-        await i.reply({
-            content: `${i.member.nickname} has claimed ${artist}.`,
-            ephemeral: false,
+        const messageCollector = i.channel.createMessageCollector({
+            
+            filter: m => {
+                console.log('message seen:', m.author.id, 'expected:', i.user.id);
+                return m.author.id === i.user.id;
+            },
+            max: 1,        // only collect one message
+            time: 60000    // 60 seconds to respond
         });
+
+        messageCollector.on('collect', async m => {
+            const phone = m.content;
+
+            updateReporter(rowNumber, i.member.nickname, phone);
+
+            try { await prompt.delete(); } catch {}
+            try { await m.delete(); } catch {}
+
+            await i.channel.send(`${i.member.nickname} has claimed ${artist}!`);
+        });
+        
 
     });
 
