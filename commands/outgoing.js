@@ -16,7 +16,9 @@ module.exports = {
    
 
     const outgoing = shows.filter(show => {
-        const showDate = new Date(`${show.date}, 2026`); // get show date
+        const currentYear = new Date().getFullYear();
+
+        const showDate = new Date(`${show.date}, ${currentYear}`); // get show date
 
         const attended = show.attended === 'TRUE'; // check if attended
 

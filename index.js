@@ -76,7 +76,7 @@ client.on(
 
       } else {
 
-        await interaction.reply({
+        await interaction.deferReply({
           content:
             'There was an error executing this command.',
           ephemeral: true,
