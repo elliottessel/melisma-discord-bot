@@ -4,6 +4,9 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
 } = require('discord.js');
 
 const { updateReporter, getShows } = require('../sheets');
@@ -60,7 +63,7 @@ module.exports = {
         const button =
             new ButtonBuilder()
             .setCustomId(
-                `claim_${show.rowNumber}`
+                `claim_${show.rowNumber}_${show.artist}`
             )
             .setLabel(`${index + 1}`)
             .setStyle(ButtonStyle.Secondary);
@@ -91,15 +94,19 @@ module.exports = {
     collector.on('collect', async i => {    
         if(!i.isButton()) return;
 
-        const rowNumber = i.customId.replace('claim_', '');
+        const parts = i.customId.split('_');
+        const rowNumber = parts[1];
+        const artist = parts.slice(2).join('_'); // handles artists with underscores in name
+
+
 
         // update sheets with reporter 
-
         updateReporter(rowNumber, i.member.nickname);
+ 
 
         await i.reply({
-            content: `${i.member.nickname} has claimed show #${rowNumber}.`,
-            ephemeral: true
+            content: `${i.member.nickname} has claimed ${artist}.`,
+            ephemeral: false,
         });
 
     });
