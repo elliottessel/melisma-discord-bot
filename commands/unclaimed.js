@@ -8,12 +8,17 @@ const {
 
 const { updateReporter, getShows } = require('../sheets');
 
-// TODO: Update after pressed (make sure can't be overwridden) 
+// TODO: Update after pressed (make sure can't be overwridden) && add option for unclaimed w/out press offer
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('unclaimed')
-    .setDescription('Shows unclaimed press opportunities'),
+    .setDescription('Shows unclaimed press opportunities within next 2 weeks')
+    .addBooleanOption(option =>
+        option.setName('all')
+          .setDescription('Show all unclaimed press opportunities including unconfirmed offers')
+          .setRequired(false)
+    ),
 
   async execute(interaction) {
     await interaction.deferReply();
@@ -21,6 +26,10 @@ module.exports = {
     const shows = await getShows();
 
     const date = new Date();
+
+    const twoWeeks = new Date(date.getTime() + 14 * 24 * 60 * 60 * 1000);
+
+    const showAll = interaction.options.getBoolean('all') ?? false;
 
     const unclaimed = shows.filter(show => {
         const noReporter = !show.reporter;
@@ -32,9 +41,10 @@ module.exports = {
         const showDate = new Date(`${show.date}, ${currentYear}`); // get show date
 
         const future = showDate > date; // check if date is passed
+        const withinTwoWeeks = showDate <= twoWeeks;
 
-        return noReporter && offered && future; // only return shows that are unclaimed, offered, and future date
-    });
+        return noReporter && (offered || showAll) && future && withinTwoWeeks; // only return shows that are unclaimed, offered, and future date
+    }).slice(0, 25); // max out at 25 
 
     if (unclaimed.length === 0) {
         return interaction.editReply(
@@ -104,7 +114,6 @@ module.exports = {
         const messageCollector = i.channel.createMessageCollector({
             
             filter: m => {
-                console.log('message seen:', m.author.id, 'expected:', i.user.id);
                 return m.author.id === i.user.id;
             },
             max: 1,        // only collect one message

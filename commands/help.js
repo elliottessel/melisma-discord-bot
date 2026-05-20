@@ -26,7 +26,7 @@ module.exports = {
     }
 
     const embed = new EmbedBuilder()
-        .setTitle('Available Commands')
+        .setTitle('Available Commands:')
         .setDescription(embedDescription);
 
     await interaction.reply({
