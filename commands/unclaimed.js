@@ -8,8 +8,6 @@ const {
 
 const { updateReporter, getShows } = require('../sheets');
 
-// TODO: Update after pressed (make sure can't be overwridden) && add option for unclaimed w/out press offer
-
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('unclaimed')
@@ -125,9 +123,23 @@ module.exports = {
 
             updateReporter(rowNumber, i.member.nickname, phone);
 
+            // Disable the claimed button
+            const newButtons = buttons.map(b => {
+                if (b.data.custom_id === i.customId) {
+                    return ButtonBuilder.from(b).setDisabled(true).setStyle(ButtonStyle.Success);
+                }
+                return b;
+            });
+
+            const newRows = [];
+            for (let j = 0; j < newButtons.length; j += 5) {
+                newRows.push(new ActionRowBuilder().addComponents(newButtons.slice(j, j + 5)));
+            }
+
             try { await prompt.delete(); } catch {}
             try { await m.delete(); } catch {}
 
+            await interaction.editReply({ embeds: [embed], components: newRows });
             await i.channel.send(`${i.member.nickname} has claimed ${artist}!`);
         });
         
