@@ -2,10 +2,12 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 const { getShows } = require('../sheets');
 
+// TODO: Add "Urgent Tag" if show was > 2 weeks ago && not written
+
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('outgoing')
-    .setDescription('Shows reviews that have been written but not edited/posted'),
+    .setName('missing')
+    .setDescription('Shows reviews that have been not written yet'),
 
   async execute(interaction) {
     await interaction.deferReply();
@@ -14,37 +16,37 @@ module.exports = {
 
     const date = new Date();
 
-    const outgoing = shows.filter(show => {
+    const missing = shows.filter(show => {
         const currentYear = new Date().getFullYear();
 
         const showDate = new Date(`${show.date}, ${currentYear}`); // get show date
 
-        const written = show.reviewWritten === 'TRUE'; // check if review has written
+        const attended = show.attended === 'TRUE'; // check if attended
+
+        const missing = show.reviewWritten !== 'TRUE'; // check if review is missing
         
         const passed = showDate < date; // check if date is passed
 
-        return written && passed; // only return shows that are written and past date
+        return attended && missing && passed; // only return shows that are missing and past date
     });
 
-    if (outgoing.length === 0) {
+    if (missing.length === 0) {
         return interaction.editReply(
-            'No outgoing reviews right now.'
+            'No missing reviews right now.'
         );
     }
 
-    const limited = outgoing.reverse().slice(0, 8);
-
+    const limited = missing.reverse().slice(0, 8);
     
     let description = '';
 
     limited.reverse().forEach((show, index) => {
-        description += `• **${show.artist}** - ${show.date}\nReporter: ${show.reporter}\nEditor: ${show.editor || 'Unassigned'}\n\n`;
+        description += `• **${show.artist}**\nReporter: ${show.reporter || 'Unassigned'}\nDate: ${show.date}\n\n`;
     });
 
     const embed = new EmbedBuilder()
-        .setTitle('Outgoing Reviews')
+        .setTitle('Missing Reviews')
         .setDescription(description);
-
 
     await interaction.editReply({
         embeds: [embed],
