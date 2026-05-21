@@ -15,6 +15,7 @@ module.exports = {
     const shows = await getShows();
 
     const date = new Date();
+    const twoWeeks = new Date(date.getTime() + 14 * 24 * 60 * 60 * 1000);
 
     const missing = shows.filter(show => {
         const currentYear = new Date().getFullYear();
@@ -36,12 +37,16 @@ module.exports = {
         );
     }
 
-    const limited = missing.reverse().slice(0, 8);
     
     let description = '';
 
-    limited.reverse().forEach((show, index) => {
-        description += `• **${show.artist}**\nReporter: ${show.reporter || 'Unassigned'}\nDate: ${show.date}\n\n`;
+    missing.forEach((show, index) => {
+        const withinTwoWeeks = new Date(`${show.date}, ${new Date().getFullYear()}`) <= twoWeeks;
+        if (!withinTwoWeeks) {
+            description += `• **${show.artist}**\nReporter: ${show.reporter || 'Unassigned'}\nDate: ${show.date}\n\n`;
+        } else {
+            description += `• **${show.artist}** - :rotating_light: Overdue :rotating_light:\nReporter: ${show.reporter || 'Unassigned'}\nDate: ${show.date}\n\n`;
+        }
     });
 
     const embed = new EmbedBuilder()
