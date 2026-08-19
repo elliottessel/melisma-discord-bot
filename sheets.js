@@ -11,7 +11,7 @@ const sheets = google.sheets({
 });
 
 const spreadsheetId =
-  '1gIqdqfw5H5EquttJ95O0tAyDUEyeztsCKsFGtql4zOc';
+  '1CassrI-km7CdKt2hxwopjaJKNVjfgk5hRhrIBt046b0';
 
 async function getShows() {
 

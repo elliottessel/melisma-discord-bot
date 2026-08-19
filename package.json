@@ -19,10 +19,11 @@
   },
   "homepage": "https://github.com/elliottessel/melisma-discord-bot#readme",
   "dependencies": {
-    "@discordjs/rest": "^2.6.1",
-    "discord-api-types": "^0.38.47",
-    "discord.js": "^14.26.4",
+    "@discordjs/rest": "^2.6.3",
+    "discord-api-types": "^0.38.53",
+    "discord.js": "^14.27.0",
     "dotenv": "^17.4.2",
     "googleapis": "^171.4.0"
-  }
+  },
+  "devDependencies": {}
 }
