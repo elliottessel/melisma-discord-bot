@@ -1,3 +1,7 @@
+const credentials = JSON.parse(
+  Buffer.from(process.env.GOOGLE_CREDENTIALS_BASE64, 'base64').toString('utf-8')
+);
+
 const { google } = require('googleapis');
 
 const auth = new google.auth.GoogleAuth({
