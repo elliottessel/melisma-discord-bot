@@ -2,14 +2,13 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 const { getShows } = require('../sheets');
 
-// TODO: Add "Urgent Tag" if show was > 2 weeks ago && not written
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('missing')
     .setDescription('Shows reviews that have been not written yet')
     .addBooleanOption(option =>
-        option.setName('Overdue Only')
+        option.setName('overdue_only')
           .setDescription('Show only overdue reviews')
           .setRequired(false)
     ),
@@ -22,7 +21,7 @@ module.exports = {
     const date = new Date();
     const twoWeeksAgo = new Date(date.getTime() - 14 * 24 * 60 * 60 * 1000);
 
-    const overdueOnly = interaction.options.getBoolean('Overdue Only') ?? false; // check if only overdue is selected
+    const overdueOnly = interaction.options.getBoolean('overdue_only') ?? false; // check if only overdue is selected
 
     const missing = shows.filter(show => {
         const currentYear = new Date().getFullYear();
