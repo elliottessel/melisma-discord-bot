@@ -54,7 +54,7 @@ module.exports = {
         const isOverdue = showDate < twoWeeksAgo; // show happened more than 2 weeks ago
         const msPerDay = 24 * 60 * 60 * 1000;
         const daysSinceShow = (date - showDate) / msPerDay; // date = new Date(), "today"
-        const daysUntilOverdue = 14 - daysSinceShow;
+        const daysUntilOverdue = Math.ceil(14 - daysSinceShow);
         if (!isOverdue) {
             if (overdueOnly) {
                 return;
