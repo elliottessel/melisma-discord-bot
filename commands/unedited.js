@@ -23,9 +23,9 @@ module.exports = {
         
         const passed = showDate < date; // check if date is passed
 
-        const posted = show.posted === 'TRUE'; // check if review is posted
+        const edited = show.edited === 'TRUE'; // check if review is edited
 
-        return written && passed && !posted; // only return shows that are written and past date
+        return written && passed && !edited; // only return shows that are written and past date
     });
 
     if (outgoing.length === 0) {

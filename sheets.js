@@ -41,8 +41,9 @@ async function getShows() {
     attended: row[9],
     editor: row[10],
     reviewWritten: row[11],
-    posted: row[12],
-    sentToPress: row[13],
+    edited: row[12],
+    posted: row[13],
+    sentToPress: row[14],
   }));
 }
 
