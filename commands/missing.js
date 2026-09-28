@@ -15,7 +15,7 @@ module.exports = {
     const shows = await getShows();
 
     const date = new Date();
-    const twoWeeks = new Date(date.getTime() + 14 * 24 * 60 * 60 * 1000);
+    const twoWeeksAgo = new Date(date.getTime() + 14 * 24 * 60 * 60 * 1000);
 
     const missing = shows.filter(show => {
         const currentYear = new Date().getFullYear();
@@ -41,8 +41,9 @@ module.exports = {
     let description = '';
 
     missing.forEach((show, index) => {
-        const withinTwoWeeks = new Date(`${show.date}, ${new Date().getFullYear()}`) <= twoWeeks;
-        if (!withinTwoWeeks) {
+        const showDate = new Date(`${show.date}, ${new Date().getFullYear()}`);
+        const isOverdue = showDate < twoWeeksAgo; // show happened more than 2 weeks ago
+        if (!isOverdue) {
             description += `• **${show.artist}**\nReporter: ${show.reporter || 'Unassigned'}\nDate: ${show.date}\n\n`;
         } else {
             description += `• **${show.artist}** - :rotating_light: Overdue :rotating_light:\nReporter: ${show.reporter || 'Unassigned'}\nDate: ${show.date}\n\n`;
