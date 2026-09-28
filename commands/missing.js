@@ -15,7 +15,7 @@ module.exports = {
     const shows = await getShows();
 
     const date = new Date();
-    const twoWeeksAgo = new Date(date.getTime() + 14 * 24 * 60 * 60 * 1000);
+    const twoWeeksAgo = new Date(date.getTime() - 14 * 24 * 60 * 60 * 1000);
 
     const missing = shows.filter(show => {
         const currentYear = new Date().getFullYear();
