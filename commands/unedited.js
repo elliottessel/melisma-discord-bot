@@ -4,7 +4,7 @@ const { getShows } = require('../sheets');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('outgoing')
+    .setName('unedited')
     .setDescription('Shows reviews that have been written but not edited/posted'),
 
   async execute(interaction) {
@@ -30,7 +30,7 @@ module.exports = {
 
     if (outgoing.length === 0) {
         return interaction.editReply(
-            'No outgoing reviews right now.'
+            'No unedited reviews right now.'
         );
     }
 
@@ -44,7 +44,7 @@ module.exports = {
     });
 
     const embed = new EmbedBuilder()
-        .setTitle('Outgoing Reviews')
+        .setTitle('Unedited Reviews')
         .setDescription(description);
 
 
