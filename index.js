@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const fs = require('fs');
 const path = require('path');
+const cron = require('node-cron');
 
 const {
   Client,
@@ -9,6 +10,8 @@ const {
   GatewayIntentBits,
   Events,
 } = require('discord.js');
+
+const { getShows } = require('./sheets');
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds,
@@ -41,7 +44,47 @@ client.once(Events.ClientReady, readyClient => {
   console.log(
     `Logged in as ${readyClient.user.tag}`
   );
+
+  cron.schedule('0 9 * * 3,6', async () => {
+    try {
+      const shows = await getShows();
+
+      const date = new Date();
+      const twoWeeksAgo = new Date(date.getTime() - 14 * 24 * 60 * 60 * 1000);
+
+      const missing = shows.filter(show => {
+          const currentYear = new Date().getFullYear();
+          const showDate = new Date(`${show.date}, ${currentYear}`);
+
+          const attended = show.attended === 'TRUE';
+          const reviewMissing = show.reviewWritten !== 'TRUE';
+          const isOverdue = showDate < twoWeeksAgo;
+
+          return attended && reviewMissing && isOverdue;
+      });
+
+      if (missing.length === 0) return;
+
+      const channel = await readyClient.channels.fetch(process.env.CHANNEL_ID);
+
+      let description = '';
+      missing.forEach(show => {
+          description += `• **${show.artist}** - :rotating_light: Overdue :rotating_light:\nReporter: ${show.reporter || 'Unassigned'}\nDate: ${show.date}\n\n`;
+      });
+
+      const embed = new EmbedBuilder()
+          .setTitle('Overdue Reviews')
+          .setDescription(description);
+
+      await channel.send({ embeds: [embed] });
+    } catch (error) {
+      console.error('Overdue check failed:', error);
+    }
+}, {
+    timezone: 'America/New_York'
+})
 });
+
 
 client.on(
   Events.InteractionCreate,
