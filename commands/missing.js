@@ -49,7 +49,10 @@ module.exports = {
     missing.forEach((show, index) => {
         const showDate = new Date(`${show.date}, ${new Date().getFullYear()}`);
         const isOverdue = showDate < twoWeeksAgo; // show happened more than 2 weeks ago
-        if (!isOverdue && !overdueOnly) {
+        if (!isOverdue) {
+            if (overdueOnly) {
+                return;
+            }
             description += `• **${show.artist}**\nReporter: ${show.reporter || 'Unassigned'}\nDate: ${show.date}\n\n`;
         } else {
             description += `• **${show.artist}** - :rotating_light: Overdue :rotating_light:\nReporter: ${show.reporter || 'Unassigned'}\nDate: ${show.date}\n\n`;
