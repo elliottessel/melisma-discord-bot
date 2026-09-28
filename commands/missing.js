@@ -46,14 +46,20 @@ module.exports = {
     
     let description = '';
 
+    
+
+
     missing.forEach((show, index) => {
         const showDate = new Date(`${show.date}, ${new Date().getFullYear()}`);
         const isOverdue = showDate < twoWeeksAgo; // show happened more than 2 weeks ago
+        const msPerDay = 24 * 60 * 60 * 1000;
+        const daysSinceShow = (date - showDate) / msPerDay; // date = new Date(), "today"
+        const daysUntilOverdue = 14 - daysSinceShow;
         if (!isOverdue) {
             if (overdueOnly) {
                 return;
             }
-            description += `• **${show.artist}**\nReporter: ${show.reporter || 'Unassigned'}\nDate: ${show.date}\n\n`;
+            description += `• **${show.artist}**\nReporter: ${show.reporter || 'Unassigned'}\nDate: ${show.date}\nOverdue in ${daysUntilOverdue} days.\n\n`;
         } else {
             description += `• **${show.artist}** - :rotating_light: Overdue :rotating_light:\nReporter: ${show.reporter || 'Unassigned'}\nDate: ${show.date}\n\n`;
         }
