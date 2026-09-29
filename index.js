@@ -46,7 +46,7 @@ client.once(Events.ClientReady, readyClient => {
     `Logged in as ${readyClient.user.tag}`
   );
 
-  cron.schedule('3 22 * * 1,3,6', async () => {
+  cron.schedule('* 9 * * 3,6', async () => {
     try {
       const shows = await getShows();
 
@@ -70,7 +70,7 @@ client.once(Events.ClientReady, readyClient => {
 
       let description = '';
       missing.forEach(show => {
-          description += `• **${show.artist}** - :rotating_light: Overdue :rotating_light:\nReporter: ${show.reporter || 'Unassigned'}\nDate: ${show.date}\n\n`;
+          description += `• **${show.artist}** - :rotating_light: Overdue :rotating_light:\nReporter: ${show.reporter || 'Unassigned'}\nDate Covered: ${show.date}\n\n`;
       });
 
       const embed = new EmbedBuilder()
