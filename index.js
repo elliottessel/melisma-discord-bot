@@ -70,7 +70,10 @@ client.once(Events.ClientReady, readyClient => {
 
       let description = '';
       missing.forEach(show => {
-          description += `• **${show.artist}** - :rotating_light: Overdue :rotating_light:\nReporter: ${show.reporter || 'Unassigned'}\nDate Covered: ${show.date}\n\n`;
+          const msPerDay = 24 * 60 * 60 * 1000;
+          const daysSinceShow = (date - showDate) / msPerDay; // date = new Date(), "today"
+          const daysOverdue = Math.ceil(daysSinceShow - 14);
+          description += `• **${show.artist}** - :rotating_light: Overdue :rotating_light:\nReporter: ${show.reporter || 'Unassigned'}\nDate Covered: ${show.date}\n${daysOverdue} days overdue.\n\n`;
       });
 
       const embed = new EmbedBuilder()
