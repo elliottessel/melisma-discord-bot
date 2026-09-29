@@ -45,7 +45,7 @@ client.once(Events.ClientReady, readyClient => {
     `Logged in as ${readyClient.user.tag}`
   );
 
-  cron.schedule('40 21 * * 1,3,6', async () => {
+  cron.schedule('50 21 * * 1,3,6', async () => {
     try {
       const shows = await getShows();
 
