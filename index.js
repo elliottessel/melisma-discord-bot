@@ -9,6 +9,7 @@ const {
   Collection,
   GatewayIntentBits,
   Events,
+  EmbedBuilder,
 } = require('discord.js');
 
 const { getShows } = require('./sheets');
@@ -45,7 +46,7 @@ client.once(Events.ClientReady, readyClient => {
     `Logged in as ${readyClient.user.tag}`
   );
 
-  cron.schedule('* 22 * * 1,3,6', async () => {
+  cron.schedule('3 22 * * 1,3,6', async () => {
     try {
       const shows = await getShows();
 
