@@ -55,13 +55,14 @@ module.exports = {
         const msPerDay = 24 * 60 * 60 * 1000;
         const daysSinceShow = (date - showDate) / msPerDay; // date = new Date(), "today"
         const daysUntilOverdue = Math.ceil(14 - daysSinceShow);
+        const daysOverdue = Math.abs(daysUntilOverdue);
         if (!isOverdue) {
             if (overdueOnly) {
                 return;
             }
-            description += `• **${show.artist}**\nReporter: ${show.reporter || 'Unassigned'}\nDate: ${show.date}\nOverdue in ${daysUntilOverdue} days.\n\n`;
+            description += `• **${show.artist}**\nReporter: ${show.reporter || 'Unassigned'}\nDate Covered: ${show.date}\nOverdue in ${daysUntilOverdue} days.\n\n`;
         } else {
-            description += `• **${show.artist}** - :rotating_light: Overdue :rotating_light:\nReporter: ${show.reporter || 'Unassigned'}\nDate: ${show.date}\n\n`;
+            description += `• **${show.artist}** - :rotating_light: Overdue :rotating_light:\nReporter: ${show.reporter || 'Unassigned'}\nDate Covered: ${show.date}\n${daysOverdue} days overdue.\n\n`;
         }
     });
 
