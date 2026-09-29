@@ -73,7 +73,7 @@ client.once(Events.ClientReady, readyClient => {
           const msPerDay = 24 * 60 * 60 * 1000;
           const daysSinceShow = (date - showDate) / msPerDay; // date = new Date(), "today"
           const daysOverdue = Math.ceil(daysSinceShow - 14);
-          description += `• **${show.artist}** - :rotating_light: Overdue :rotating_light:\nReporter: ${show.reporter || 'Unassigned'}\nDate Covered: ${show.date}\n${daysOverdue} days overdue.\n\n`;
+          description += `• **${show.artist}** - :rotating_light: Overdue :rotating_light:\nReporter: ${show.reporter || 'Unassigned'}\nDate Covered: ${show.date}\n**${daysOverdue} day(s) Overdue.**\n\n`;
       });
 
       const embed = new EmbedBuilder()
