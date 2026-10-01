@@ -107,7 +107,10 @@ module.exports = {
         const rowNumber = parts[1];
         const artist = parts.slice(2).join('_'); // handles artists with underscores in name
 
-        const prompt = await i.channel.send(`Please enter your phone number:`);
+        const prompt = await i.followUp({
+            content: 'Please enter your phone number:',
+            ephemeral: true
+        });
 
         const messageCollector = i.channel.createMessageCollector({
             
