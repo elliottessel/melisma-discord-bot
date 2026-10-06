@@ -60,9 +60,9 @@ module.exports = {
             if (overdueOnly) {
                 return;
             }
-            description += `• **${show.artist}**\nReporter: ${show.reporter || 'Unassigned'}\nDate Covered: ${show.date}\nOverdue in ${daysUntilOverdue} days.\n\n`;
+            description += `• **${show.artist}** - ${show.reporter || 'Unassigned'}\nCovered: ${show.date}, Overdue in ${daysUntilOverdue} days.\n\n`;
         } else {
-            description += `• **${show.artist}** - :rotating_light: Overdue :rotating_light:\nReporter: ${show.reporter || 'Unassigned'}\nDate Covered: ${show.date}\n${daysOverdue} days overdue.\n\n`;
+            description += `• :rotating_light: **Overdue** :rotating_light: **${show.artist}** - ${show.reporter || 'Unassigned'}\n Covered: ${show.date}, ${daysOverdue} days overdue.\n\n`;
         }
     });
 
