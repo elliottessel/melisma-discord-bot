@@ -71,6 +71,7 @@ client.once(Events.ClientReady, readyClient => {
       let description = '';
       missing.forEach(show => {
           const msPerDay = 24 * 60 * 60 * 1000;
+          const showDate = new Date(`${show.date}, ${currentYear}`);
           const daysSinceShow = (date - showDate) / msPerDay; // date = new Date(), "today"
           const daysOverdue = Math.ceil(daysSinceShow - 14);
           description += `• **${show.artist}** - :rotating_light: Overdue :rotating_light:\nReporter: ${show.reporter || 'Unassigned'}\nDate Covered: ${show.date}\n**${daysOverdue} day(s) Overdue.**\n\n`;
