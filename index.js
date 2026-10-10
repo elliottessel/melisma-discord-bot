@@ -49,7 +49,7 @@ client.once(Events.ClientReady, readyClient => {
   cron.schedule('* 9 * * 3,6', async () => {
     try {
       const shows = await getShows();
-
+      
       const date = new Date();
       const twoWeeksAgo = new Date(date.getTime() - 14 * 24 * 60 * 60 * 1000);
 
@@ -71,6 +71,7 @@ client.once(Events.ClientReady, readyClient => {
       let description = '';
       missing.forEach(show => {
           const msPerDay = 24 * 60 * 60 * 1000;
+          const currentYear = new Date().getFullYear();
           const showDate = new Date(`${show.date}, ${currentYear}`);
           const daysSinceShow = (date - showDate) / msPerDay; // date = new Date(), "today"
           const daysOverdue = Math.ceil(daysSinceShow - 14);
