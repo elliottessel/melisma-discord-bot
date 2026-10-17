@@ -75,11 +75,11 @@ client.once(Events.ClientReady, readyClient => {
           const showDate = new Date(`${show.date}, ${currentYear}`);
           const daysSinceShow = (date - showDate) / msPerDay; // date = new Date(), "today"
           const daysOverdue = Math.ceil(daysSinceShow - 14);
-          description += `• **${show.artist}** - :rotating_light: Overdue :rotating_light:\nReporter: ${show.reporter || 'Unassigned'}\nDate Covered: ${show.date}\n**${daysOverdue} day(s) Overdue.**\n\n`;
+          description += `• **${show.artist}** - ${show.reporter || 'Unassigned'}\nCovered: ${show.date}\n**${daysOverdue} day(s) Overdue.**\n\n`;
       });
 
       const embed = new EmbedBuilder()
-          .setTitle('Overdue Reviews')
+          .setTitle(':rotating_light: Overdue Reviews :rotating_light:')
           .setDescription(description);
 
       await channel.send({ embeds: [embed] });
