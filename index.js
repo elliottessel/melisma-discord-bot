@@ -96,8 +96,18 @@ client.on(
   Events.InteractionCreate,
   async interaction => {
 
+    if (interaction.isButton() && interaction.customId.startsWith('claim_')) {
+      try {
+        await require('./commands/unclaimed').handleButton(interaction);
+      } catch (error) {
+        console.error(error);
+      }
+      return;
+    }
+
     if (!interaction.isChatInputCommand())
       return;
+
 
     const command =
       client.commands.get(

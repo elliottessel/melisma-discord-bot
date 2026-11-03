@@ -94,61 +94,121 @@ module.exports = {
         components: rows,
     });
 
-    const message = await interaction.fetchReply();
+    // const message = await interaction.fetchReply();
 
-    const collector = message.createMessageComponentCollector();
+    // const collector = message.createMessageComponentCollector();
 
-    collector.on('collect', async i => {    
-        if(!i.isButton()) return;
+    // collector.on('collect', async i => {    
+    //     if(!i.isButton()) return;
 
-        await i.deferUpdate(); 
+    //     await i.deferUpdate(); 
 
-        const parts = i.customId.split('_');
-        const rowNumber = parts[1];
-        const artist = parts.slice(2).join('_'); // handles artists with underscores in name
+    //     const parts = i.customId.split('_');
+    //     const rowNumber = parts[1];
+    //     const artist = parts.slice(2).join('_'); // handles artists with underscores in name
 
-        const prompt = await i.followUp({
-            content: 'Please enter your phone number:',
-            ephemeral: true
-        });
+    //     const prompt = await i.followUp({
+    //         content: 'Please enter your phone number:',
+    //         ephemeral: true
+    //     });
 
-        const messageCollector = i.channel.createMessageCollector({
+    //     const messageCollector = i.channel.createMessageCollector({
             
-            filter: m => {
-                return m.author.id === i.user.id;
-            },
-            max: 1,        // only collect one message
-            time: 60000    // 60 seconds to respond
-        });
+    //         filter: m => {
+    //             return m.author.id === i.user.id;
+    //         },
+    //         max: 1,        // only collect one message
+    //         time: 60000    // 60 seconds to respond
+    //     });
 
-        messageCollector.on('collect', async m => {
-            const phone = m.content;
+    //     messageCollector.on('collect', async m => {
+    //         const phone = m.content;
 
-            updateReporter(rowNumber, i.member.nickname, phone);
+    //         updateReporter(rowNumber, i.member.nickname, phone);
 
-            // Disable the claimed button
-            const newButtons = buttons.map(b => {
-                if (b.data.custom_id === i.customId) {
-                    return ButtonBuilder.from(b).setDisabled(true).setStyle(ButtonStyle.Success);
-                }
-                return b;
-            });
+    //         // Disable the claimed button
+    //         const newButtons = buttons.map(b => {
+    //             if (b.data.custom_id === i.customId) {
+    //                 return ButtonBuilder.from(b).setDisabled(true).setStyle(ButtonStyle.Success);
+    //             }
+    //             return b;
+    //         });
 
-            const newRows = [];
-            for (let j = 0; j < newButtons.length; j += 5) {
-                newRows.push(new ActionRowBuilder().addComponents(newButtons.slice(j, j + 5)));
-            }
+    //         const newRows = [];
+    //         for (let j = 0; j < newButtons.length; j += 5) {
+    //             newRows.push(new ActionRowBuilder().addComponents(newButtons.slice(j, j + 5)));
+    //         }
 
-            try { await prompt.delete(); } catch {}
-            try { await m.delete(); } catch {}
+    //         try { await prompt.delete(); } catch {}
+    //         try { await m.delete(); } catch {}
 
-            await interaction.editReply({ embeds: [embed], components: newRows });
-            await i.channel.send(`${i.member.nickname} has claimed ${artist}!`);
-        });
-        
+    //         await interaction.editReply({ embeds: [embed], components: newRows });
+    //         await i.channel.send(`${i.member.nickname} has claimed ${artist}!`);
+    //     });
+    
 
+    // });
+
+  },
+
+  async handleButton(i) {
+    const rowNumber = i.customId.split('_')[1];
+    await i.deferUpdate();
+  
+    // The list may be days old, so check the sheet before asking for anything
+    const shows = await getShows();
+    const show = shows.find(s => String(s.rowNumber) === rowNumber);
+    if (!show || show.reporter) {
+      return i.followUp({ content: 'Sorry, that one has already been claimed.', ephemeral: true });
+    }
+  
+    const prompt = await i.followUp({
+      content: `Please enter your phone number to claim **${show.artist}**:`,
+      ephemeral: true,
     });
-
+  
+    const collector = i.channel.createMessageCollector({
+      filter: m => m.author.id === i.user.id,
+      max: 1,
+      time: 60000,
+    });
+  
+    collector.on('collect', async m => {
+      const phone = m.content;
+      const name = i.member?.displayName ?? i.user.username;
+  
+      // Re-check: someone else may have claimed it while this person was typing
+      const latest = (await getShows()).find(s => String(s.rowNumber) === rowNumber);
+      if (!latest || latest.reporter) {
+        await m.delete().catch(() => {});
+        return i.followUp({ content: 'Sorry, someone just claimed that one.', ephemeral: true });
+      }
+  
+      await updateReporter(rowNumber, name, phone);
+  
+      // Rebuild buttons from the message as it is NOW, not from a stale variable
+      const current = await i.channel.messages.fetch(i.message.id);
+      const rows = current.components.map(row => {
+        const newRow = ActionRowBuilder.from(row);
+        newRow.components.forEach(c => {
+          if (c.data.custom_id === `claim_${rowNumber}`) {
+            c.setDisabled(true).setStyle(ButtonStyle.Success);
+          }
+        });
+        return newRow;
+      });
+  
+      await i.editReply({ components: rows }); // i = the click, so the token is fresh
+      await m.delete().catch(() => {});
+      await i.deleteReply(prompt).catch(() => {});
+      await i.channel.send(`${name} has claimed ${show.artist}!`);
+    });
+  
+    collector.on('end', (collected, reason) => {
+      if (reason === 'time') {
+        i.followUp({ content: 'Timed out. Click the button again to retry.', ephemeral: true }).catch(() => {});
+      }
+    });
   },
 
 };
